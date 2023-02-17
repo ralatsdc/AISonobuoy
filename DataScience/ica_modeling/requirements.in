@@ -1,0 +1,16 @@
+# --- requirements.in
+
+# Development tools
+jupyterlab
+
+# Testing tools
+pytest
+
+# Project-specific packages
+matplotlib
+numpy
+pandas
+pydub
+scipy
+scikit-learn
+
