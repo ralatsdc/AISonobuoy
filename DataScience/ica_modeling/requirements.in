@@ -6,6 +6,7 @@ jupyterlab
 # CLI tools
 rich
 PyYAML
+tqdm
 typer
 
 # Testing and code quality tools
