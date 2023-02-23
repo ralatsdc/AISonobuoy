@@ -11,7 +11,6 @@ import math
 from pathlib import Path
 import glob
 import os
-from typing import Optional
 
 # External packages
 import numpy as np
@@ -106,11 +105,11 @@ def main(
         raise typer.Abort()
 
     if num_active_sources <= 0:
-        _ERROR_CONSOLE.print(f"Error: number of active sources must be positive.")
+        _ERROR_CONSOLE.print("Error: number of active sources must be positive.")
         raise typer.Abort()
 
     if num_time_points <= 0:
-        _ERROR_CONSOLE.print(f"Error: number of time points must be positive.")
+        _ERROR_CONSOLE.print("Error: number of time points must be positive.")
         raise typer.Abort()
 
     if distance_map_path is not None and not os.path.isfile(distance_map_path):
@@ -121,27 +120,25 @@ def main(
 
     if avg_init_dist <= 0:
         _ERROR_CONSOLE.print(
-            f"Error: average initial distance of sources from hydrophone must be positive."
+            "Error: average initial distance of sources from hydrophone must be positive."
         )
         raise typer.Abort()
 
     if min_init_dist <= 0:
         _ERROR_CONSOLE.print(
-            f"Error: minimum initial distance of sources from hydrophone must be positive."
+            "Error: minimum initial distance of sources from hydrophone must be positive."
         )
         raise typer.Abort()
 
     if avg_delta_dist <= 0:
         _ERROR_CONSOLE.print(
-            f"Error: average distance travelled by sources between time points "
-            "must be positive."
+            "Error: average distance travelled by sources between time points must be positive."
         )
         raise typer.Abort()
 
     if min_delta_dist <= 0:
         _ERROR_CONSOLE.print(
-            f"Error: minimum distance travelled by sources between time points "
-            "must be positive."
+            "Error: minimum distance travelled by sources between time points must be positive."
         )
         raise typer.Abort()
 
@@ -164,20 +161,19 @@ def main(
     )
 
     # Load audio data for active sources
-    audio_segments = []
+    audio_clips = []
     source_distances = []
-    source_id = 0
     for i, file_path in enumerate(glob.glob(os.path.join(data_dir, "*.wav"))):
-        # Load audio segment
+        # Load audio clip
         if i in active_sources:
-            audio_segments.append(AudioSegment.from_wav(file_path))
+            audio_clips.append(AudioSegment.from_wav(file_path))
             if distance_map:
                 source_distances.append(distance_map[os.path.basename(file_path)])
 
     audio_raw_data = []
-    for segment in audio_segments:
+    for clip in audio_clips:
         # Get samples
-        audio = segment.split_to_mono()[0]
+        audio = clip.split_to_mono()[0]
         samples = audio.get_array_of_samples()
 
         # Convert samples to a NumPy array
@@ -193,7 +189,7 @@ def main(
             }
         )
 
-    # Check that frame rate and frame width are the same for all audio segments
+    # Check that frame rate and frame width are the same for all audio clips
     frame_rate = audio_raw_data[0]["frame_rate"]
     for raw_data in audio_raw_data:
         if raw_data["frame_rate"] != frame_rate:
@@ -206,14 +202,14 @@ def main(
             _ERROR_CONSOLE.print("Frame widths are not consistent across source clips.")
             raise typer.Abort
 
-    # Construct NumPy array containing segments of the same duration for active sources
+    # Construct NumPy array containing clips of the same duration for active sources
     num_sources = len(audio_raw_data)
     num_samples = min(audio["num_samples"] for audio in audio_raw_data)
     audio_data = np.empty((num_samples, num_sources), dtype="float32")
     for i, audio in enumerate(audio_raw_data):
         audio_data[:, i] = audio["data"][0:num_samples]
 
-    # --- Generate synthetic clips
+    # --- Generate synthetic audio clips
     #
     #     Notes
     #     -----
@@ -221,7 +217,7 @@ def main(
     #       heading. The distance travelled by each source is a random variable with
     #       mean avg_delta_dist and standard deviation (0.1 * avg_delta_dist).
 
-    print("Generating synthetic clips...")
+    print("Generating synthetic audio clips...")
 
     # ------ Preparations
 
@@ -279,9 +275,9 @@ def main(
         amplitudes = np.diag(r_init / r)
         pressure[:, i] = np.sum(audio_data @ amplitudes, axis=1)
 
-    # --- Save synthetic clips
+    # --- Save synthetic audio clips
 
-    print("Saving synthetic clips...")
+    print("Saving synthetic audio clips...")
 
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
