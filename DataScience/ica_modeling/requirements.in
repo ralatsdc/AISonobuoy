@@ -3,6 +3,10 @@
 # Development tools
 jupyterlab
 
+# CLI tools
+rich
+typer
+
 # Testing tools
 pytest
 
