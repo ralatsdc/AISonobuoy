@@ -120,25 +120,29 @@ def main(
 
     if avg_init_dist <= 0:
         _ERROR_CONSOLE.print(
-            "Error: average initial distance of sources from hydrophone must be positive."
+            "Error: average initial distance of sources from hydrophone must be "
+            "positive."
         )
         raise typer.Abort()
 
     if min_init_dist <= 0:
         _ERROR_CONSOLE.print(
-            "Error: minimum initial distance of sources from hydrophone must be positive."
+            "Error: minimum initial distance of sources from hydrophone must be "
+            "positive."
         )
         raise typer.Abort()
 
     if avg_delta_dist <= 0:
         _ERROR_CONSOLE.print(
-            "Error: average distance travelled by sources between time points must be positive."
+            "Error: average distance travelled by sources between time points must "
+            "be positive."
         )
         raise typer.Abort()
 
     if min_delta_dist <= 0:
         _ERROR_CONSOLE.print(
-            "Error: minimum distance travelled by sources between time points must be positive."
+            "Error: minimum distance travelled by sources between time points must "
+            "be positive."
         )
         raise typer.Abort()
 
