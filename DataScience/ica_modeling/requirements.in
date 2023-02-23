@@ -11,6 +11,7 @@ typer
 
 # Testing and code quality tools
 black
+flake8
 pytest
 
 # Project-specific packages

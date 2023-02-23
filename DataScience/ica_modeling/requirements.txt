@@ -61,6 +61,8 @@ executing==1.2.0
     # via stack-data
 fastjsonschema==2.16.2
     # via nbformat
+flake8==6.0.0
+    # via -r requirements.in
 fonttools==4.38.0
     # via matplotlib
 fqdn==1.5.1
@@ -155,6 +157,8 @@ matplotlib-inline==0.1.6
     # via
     #   ipykernel
     #   ipython
+mccabe==0.7.0
+    # via flake8
 mdurl==0.1.2
     # via markdown-it-py
 mistune==2.0.4
@@ -240,10 +244,14 @@ ptyprocess==0.7.0
     #   terminado
 pure-eval==0.2.2
     # via stack-data
+pycodestyle==2.10.0
+    # via flake8
 pycparser==2.21
     # via cffi
 pydub==0.25.1
     # via -r requirements.in
+pyflakes==3.0.1
+    # via flake8
 pygments==2.14.0
     # via
     #   ipython
