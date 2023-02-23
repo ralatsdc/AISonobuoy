@@ -5,9 +5,11 @@ jupyterlab
 
 # CLI tools
 rich
+PyYAML
 typer
 
-# Testing tools
+# Testing and code quality tools
+black
 pytest
 
 # Project-specific packages
@@ -17,4 +19,3 @@ pandas
 pydub
 scipy
 scikit-learn
-
