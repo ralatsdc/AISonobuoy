@@ -183,7 +183,7 @@ def main(
         audio_raw_data.append(
             {
                 "frame_rate": audio.frame_rate,
-                "frame_width": audio.frame_width,
+                "sample_width": audio.sample_width,
                 "data": fp_arr,
                 "num_samples": len(samples),
             }
@@ -196,9 +196,9 @@ def main(
             _ERROR_CONSOLE.print("Frame rates are not consistent across source clips.")
             raise typer.Abort
 
-    frame_width = audio_raw_data[0]["frame_width"]
+    sample_width = audio_raw_data[0]["sample_width"]
     for raw_data in audio_raw_data:
-        if raw_data["frame_width"] != frame_width:
+        if raw_data["sample_width"] != sample_width:
             _ERROR_CONSOLE.print("Frame widths are not consistent across source clips.")
             raise typer.Abort
 
@@ -293,7 +293,7 @@ def main(
         audio = AudioSegment(
             sample_array,
             frame_rate=frame_rate,
-            sample_width=frame_width,
+            sample_width=sample_width,
             channels=1,
         )
         audio.export(save_path, format="wav")
