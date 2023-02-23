@@ -166,52 +166,56 @@ def main(
 
     # Load audio data for active sources
     audio_clips = []
-    source_distances = []
     for i, file_path in enumerate(glob.glob(os.path.join(data_dir, "*.wav"))):
-        # Load audio clip
         if i in active_sources:
-            audio_clips.append(AudioSegment.from_wav(file_path))
+            # Load audio clip
+            clip = AudioSegment.from_wav(file_path)
+
+            # Get samples
+            audio = clip.split_to_mono()[0]
+            samples = audio.get_array_of_samples()
+
+            # Convert samples to a NumPy array
+            fp_arr = np.array(samples).T.astype(np.float32)
+            # fp_arr /= np.iinfo(samples.typecode).max  # TODO: do we need this?
+
+            # Get source distance
             if distance_map:
-                source_distances.append(distance_map[os.path.basename(file_path)])
+                distance = distance_map[os.path.basename(file_path)]
+            else:
+                distance = None
 
-    audio_raw_data = []
-    for clip in audio_clips:
-        # Get samples
-        audio = clip.split_to_mono()[0]
-        samples = audio.get_array_of_samples()
-
-        # Convert samples to a NumPy array
-        fp_arr = np.array(samples).T.astype(np.float32)
-        # fp_arr /= np.iinfo(samples.typecode).max  # TODO: do we need this?
-
-        audio_raw_data.append(
-            {
-                "frame_rate": audio.frame_rate,
-                "sample_width": audio.sample_width,
-                "data": fp_arr,
-                "num_samples": len(samples),
-            }
-        )
+            # Get source distance
+            audio_clips.append(
+                {
+                    "file": os.path.basename(file_path),
+                    "distance": distance,
+                    "data": fp_arr,
+                    "frame_rate": audio.frame_rate,
+                    "sample_width": audio.sample_width,
+                    "num_samples": len(samples),
+                }
+            )
 
     # Check that frame rate and frame width are the same for all audio clips
-    frame_rate = audio_raw_data[0]["frame_rate"]
-    for raw_data in audio_raw_data:
-        if raw_data["frame_rate"] != frame_rate:
+    frame_rate = audio_clips[0]["frame_rate"]
+    for clip in audio_clips:
+        if clip["frame_rate"] != frame_rate:
             _ERROR_CONSOLE.print("Frame rates are not consistent across source clips.")
             raise typer.Abort
 
-    sample_width = audio_raw_data[0]["sample_width"]
-    for raw_data in audio_raw_data:
-        if raw_data["sample_width"] != sample_width:
+    sample_width = audio_clips[0]["sample_width"]
+    for clip in audio_clips:
+        if clip["sample_width"] != sample_width:
             _ERROR_CONSOLE.print("Frame widths are not consistent across source clips.")
             raise typer.Abort
 
     # Construct NumPy array containing clips of the same duration for active sources
-    num_sources = len(audio_raw_data)
-    num_samples = min(audio["num_samples"] for audio in audio_raw_data)
+    num_sources = len(audio_clips)
+    num_samples = min(clip["num_samples"] for clip in audio_clips)
     audio_data = np.empty((num_samples, num_sources), dtype="float32")
-    for i, audio in enumerate(audio_raw_data):
-        audio_data[:, i] = audio["data"][0:num_samples]
+    for i, clip in enumerate(audio_clips):
+        audio_data[:, i] = clip["data"][0:num_samples]
 
     # --- Generate synthetic audio clips
     #
@@ -246,8 +250,8 @@ def main(
 
     # ------ Generate initial positions
 
-    if source_distances:
-        r_init = np.array(source_distances)
+    if distance_map:
+        r_init = np.array([clip["distance"] for clip in audio_clips])
     else:
         # Generate random initial distances from hydrophone
         r_init = avg_init_dist * np.random.normal(
@@ -281,10 +285,17 @@ def main(
 
     # --- Save synthetic audio clips
 
-    print("Saving synthetic audio clips...")
-
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
+
+    print("Saving metadata...")
+
+    source_files = [clip["file"] for file in audio_clips]
+    save_path = os.path.join(output_dir, f"sources.yaml")
+    with open(save_path, "w") as file_:
+        yaml.dump(source_files, file_)
+
+    print("Saving synthetic audio clips...")
 
     for i in tqdm(range(num_time_points)):
         # Save pressures in CSV-format
