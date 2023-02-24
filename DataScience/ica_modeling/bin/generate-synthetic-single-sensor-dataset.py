@@ -290,7 +290,7 @@ def main(
 
     print("Saving metadata...")
 
-    source_files = [clip["file"] for file in audio_clips]
+    source_files = [clip["file"] for clip in audio_clips]
     save_path = os.path.join(output_dir, f"sources.yaml")
     with open(save_path, "w") as file_:
         yaml.dump(source_files, file_)
