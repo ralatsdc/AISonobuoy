@@ -45,17 +45,16 @@ _DIST_MAP = typer.Option(
     "-m",
     help="YAML file containing distance of source for each audio file (units: meters)",
 )
+_MIN_DIST = typer.Option(
+    400,
+    "--min-dist",
+    help="minimum allowable distance of sources from hydrophone (units: meters).",
+)
 _AVG_INIT_DIST = typer.Option(
     500,
     "--init-dist",
     "-i",
     help="average initial distance of sources from hydrophone (units: meters). "
-    "Ignored if distance map is provided.",
-)
-_MIN_INIT_DIST = typer.Option(
-    400,
-    "--min-init-dist",
-    help="minimum initial distance of sources from hydrophone (units: meters).  "
     "Ignored if distance map is provided.",
 )
 _AVG_DELTA_DIST = typer.Option(
@@ -68,6 +67,12 @@ _MIN_DELTA_DIST = typer.Option(
     200,
     "--min-delta-dist",
     help="minimum distance travelled by sources between time points (units: meters)",
+)
+_TEMPORAL_SHIFT = typer.Option(
+    False,
+    "--temporal-shift",
+    "-S",
+    help="apply a random temporal shift when combining sources",
 )
 
 # Error console
@@ -83,20 +88,25 @@ def main(
     num_active_sources: int = _NUM_ACTIVE_SOURCES,
     num_time_points: int = _NUM_TIME_POINTS,
     distance_map_path: Path = _DIST_MAP,
+    min_dist: float = _MIN_DIST,
     avg_init_dist: float = _AVG_INIT_DIST,
-    min_init_dist: float = _MIN_INIT_DIST,
     avg_delta_dist: float = _AVG_DELTA_DIST,
     min_delta_dist: float = _MIN_DELTA_DIST,
+    temporal_shift: bool = _TEMPORAL_SHIFT,
 ) -> None:
     """
     Generate synthetic datasets for single-sensor, multiple-time ICA.
 
-    * The azimuth and heading of each source is modeled as a random uniformly
+    * The azimuth and heading of each source is modeled as a random variable uniformly
       distributed over the interval [0, 2 pi).
 
     * When distance data is not available, all distances (with units of meters) are
       modeled as random variables of the form D = max(avg_dist * Z, min_dist) where Z
       is a Gaussian random variable with mean 1 and standard deviation 0.1.
+
+    * When `temporal-shift` is enabled, a random "temporal shift" is applied to the
+      each source signal at each time point. The temporal shift is modeled as a random
+      variable uniformly distributed over the interval [0, 1) seconds.
     """
     # --- Check arguments
 
@@ -118,16 +128,16 @@ def main(
         )
         raise typer.Abort()
 
-    if avg_init_dist <= 0:
+    if min_dist <= 0:
         _ERROR_CONSOLE.print(
-            "Error: average initial distance of sources from hydrophone must be "
+            "Error: minimum initial distance of sources from hydrophone must be "
             "positive."
         )
         raise typer.Abort()
 
-    if min_init_dist <= 0:
+    if avg_init_dist <= 0:
         _ERROR_CONSOLE.print(
-            "Error: minimum initial distance of sources from hydrophone must be "
+            "Error: average initial distance of sources from hydrophone must be "
             "positive."
         )
         raise typer.Abort()
@@ -233,7 +243,12 @@ def main(
     position = np.empty([num_time_points, num_active_sources], dtype=complex)
 
     # Initialize array for hydrophone data
-    pressure = np.empty((num_samples, num_time_points))
+    #
+    # Note: the duration of the synthetic hydrophone clips is 60 seconds less
+    #       than the source clips to accommodate the random temporal shifts of
+    #       the source signals at different time points.
+    num_pressure_samples = num_samples - frame_rate
+    pressure = np.empty((num_pressure_samples, num_time_points))
 
     # ------ Generate source motion parameters
 
@@ -257,7 +272,7 @@ def main(
         r_init = avg_init_dist * np.random.normal(
             loc=1.0, scale=0.1, size=num_active_sources
         )
-        r_init[r_init < min_init_dist] = min_init_dist
+        r_init[r_init < min_dist] = min_dist
 
     # Generate random initial azimuth
     theta_init = 2 * math.pi * np.random.random(size=num_active_sources)
@@ -269,19 +284,29 @@ def main(
 
     for i in range(1, num_time_points):
         position[i, :] = position[i - 1, :] + delta_pos
+        while min(np.abs(position[i, :])) < min_dist:
+            position[i, :] += delta_pos
 
     # ------ Compute sound amplitudes at the hydrophone
 
     # Compute pressure at initial time
-    pressure[:, 0] = np.sum(audio_data, axis=1)
+    pressure[:, 0] = np.sum(audio_data[0:num_pressure_samples], axis=1)
 
     for i in range(1, num_time_points):
+        # Generate offset for random temporal shift
+        if temporal_shift:
+            offset = int(frame_rate * np.random.random())
+        else:
+            offset = 0
+
         # Compute distances of sources from hydrophone
         r = np.abs(position[i, :])
 
         # Compute sound amplitudes
         amplitudes = np.diag(r_init / r)
-        pressure[:, i] = np.sum(audio_data @ amplitudes, axis=1)
+        pressure[:, i] = np.sum(
+            audio_data[offset : offset + num_pressure_samples] @ amplitudes, axis=1
+        )
 
     # --- Save synthetic audio clips
 
