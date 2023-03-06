@@ -14,7 +14,7 @@ Table of Contents
 
 1. [Overview][#1]
 
-   1.1. [Theory][#1.1]
+   1.1. [ICA Theory][#1.1]
 
    1.2. [Summary of ICA Approaches and Results][#1.2]
 
@@ -34,9 +34,10 @@ Table of Contents
 
 ## 1. Overview
 
-For details, see the [summary report](reports/ica-based-source-extraction.pdf).
+For a detailed summary of the project, see `ica-based-source-extraction.pdf`
+in the `reports` directory.
 
-### 1.1. Theory
+### 1.1. ICA Theory
 
 Classically, ICA requires on multiple sensors. However, single-sensor ICA is
 possible when the mixing coefficients for the source signals vary over time.
@@ -192,7 +193,7 @@ quasi-periodic source signals.
 [----------------------------- INTERNAL LINKS -----------------------------]: #
 
 [#1]: #1-overview
-[#1.1]: #11-theory
+[#1.1]: #11-ica-theory
 [#1.2]: #12-summary-of-ica-approaches-and-results
 [#1.3]: #13-key-technical-outcomes
 [#1.4]: #14-future-directions
