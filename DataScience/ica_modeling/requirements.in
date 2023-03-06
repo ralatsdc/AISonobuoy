@@ -15,6 +15,7 @@ flake8
 pytest
 
 # Project-specific packages
+librosa
 matplotlib
 numpy
 pandas
