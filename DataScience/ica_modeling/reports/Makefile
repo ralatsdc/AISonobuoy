@@ -5,12 +5,14 @@ BIBER = biber
 
 .SUFFIXES:	.pdf
 
-all:       ica-based-source-extraction.pdf
+all:       single-sensor-ica-for-moving-sources.pdf
 
-ica-based-source-extraction.pdf: \
-		ica-based-source-extraction.tex ica-based-source-extraction.bib macros.tex
+single-sensor-ica-for-moving-sources.pdf: \
+		single-sensor-ica-for-moving-sources.tex \
+		single-sensor-ica-for-moving-sources.bib \
+		macros.tex
 	$(PDFLATEX) $*.tex
-	$(BIBER) ica-based-source-extraction.bcf
+	$(BIBER) single-sensor-ica-for-moving-sources.bcf
 	$(PDFLATEX) $*.tex
 	$(PDFLATEX) $*.tex
 

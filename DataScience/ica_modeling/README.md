@@ -34,8 +34,8 @@ Table of Contents
 
 ## 1. Overview
 
-For a detailed summary of the project, see `ica-based-source-extraction.pdf`
-in the `reports` directory.
+For a detailed summary of the project, see
+`single-sensor-ica-for-moving-sources.pdf` in the `reports` directory.
 
 ### 1.1. ICA Theory
 
@@ -185,8 +185,8 @@ quasi-periodic source signals.
   (straight line motion).
 
 * The summary report for the project is located at
-  `reports/ica-based-source-extraction.pdf`. All source files required to
-  generate the report is contained in the `reports` directory.
+  `reports/single-sensor-ica-for-moving-sources.pdf`. All source files required
+  to generate the report is contained in the `reports` directory.
 
 -------------------------------------------------------------------------------
 
