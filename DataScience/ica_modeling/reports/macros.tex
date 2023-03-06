@@ -1,0 +1,43 @@
+% Macros for entire document
+
+% Utility commands
+\newcommand{\bc}{\begin{center}}
+\newcommand{\ec}{\end{center}}
+\newcommand{\beq}{\begin{equation}}
+\newcommand{\eeq}{\end{equation}}
+\newcommand{\bea}{\begin{eqnarray}}
+\newcommand{\eea}{\end{eqnarray}}
+\newcommand{\ba}{\begin{array}}
+\newcommand{\ea}{\end{array}}
+
+% Fancy equation environments
+\newcommand{\Eq}[2][Eq.~]{{#1}(\ref{eq:#2})}                                    
+\newcommand{\Eqs}[1]{Eqs.~(\ref{eq:#1})}                                        
+\newcommand{\Fig}[2][Fig.~]{{#1}\ref{fig:#2}}                                   
+\newcommand{\Figs}[1]{Figs.~\ref{fig:#1}}                                       
+\newcommand{\Sec}[2][Sec.~]{{#1}\ref{sec:#2}}                                   
+\newcommand{\Secs}[1]{Secs.~\ref{sec:#1}}      
+
+% Common expressions
+\def\eg{\emph{e.g.}}
+\def\ie{\emph{i.e.}}
+\def\etal{\emph{et al.}}
+\def\etc{\emph{etc.}}
+
+% Mathematical notation
+\def\cross{\ensuremath{\times}}
+\def\div{\ensuremath{\nabla \cdot}}
+\def\divs{\ensuremath{\nabla_{s} \cdot}}
+\def\grad{\ensuremath{\nabla}}
+\def\grads{\ensuremath{\nabla_{s}}}
+\def\lapl{\ensuremath{\nabla^2}}
+\newcommand{\tensor}[1]{\ensuremath{{\bf{#1}}}}
+\newcommand{\vectornorm}[1]{\left|\left|#1\right|\right|}
+
+\newcommand{\ddx}[2]{\frac{d#1}{d#2}}
+\newcommand{\DDx}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\sgn}[1]{\ensuremath{\mathrm{sgn}(#1)}}
+\newcommand{\abs}[1]{\ensuremath{\left|#1\right|}}
+
+% Code
+\newcommand{\code}{\texttt}
