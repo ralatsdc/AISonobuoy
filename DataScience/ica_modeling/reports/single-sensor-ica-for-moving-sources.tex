@@ -28,7 +28,7 @@ by Kevin Chu \\
 Velexi Corporation
 }
 
-\date{Version: 1.0\\(March 6, 2023)}
+\date{Version: 1.1\\(March 20, 2023)}
 
 \begin{document}
 
@@ -78,20 +78,20 @@ consistent with theoretical expectations.
 
 \section{Introduction}
 Independent Component Analysis (ICA) is a technique for extracting independent source
-signals from measurements of mixtures of the source signals\cite{sklearn-bss,hyvarinen:2000,
-tharwat:2021}. It is commonly used in situations where there are multiple sensors
-simultaneously collecting measurements for sources whose characteristics (\eg, location)
-do not change over time. For situations where there is only a single sensor, ICA may still
-be viable if (1) the sources are moving (relative to the sensor and each other), (2) it is
-performed on multiple signal clips recorded at different times, and (3) the assumptions of
-the ICA model are valid for the mixed signal clips.
+signals from measurements of mixtures of the source signals~\cite{sklearn-bss,
+hyvarinen:2000,tharwat:2021}. It is commonly used in situations where there are multiple
+sensors simultaneously collecting measurements for sources whose characteristics (\eg,
+location) do not change over time. For situations where there is only a single sensor, ICA
+may still be viable if (1) the sources are moving (relative to the sensor and each other),
+(2) it is performed on multiple signal clips recorded at different times, and (3) the
+assumptions of the ICA model are valid for the mixed signal clips.
 
 \subsection*{ICA Source Signals as ML Features}
 ICA can be useful as a feature engineering method. The source signals estimated by ICA
 (possibly across mulitple non-overlapping applications of ICA) define a dictionary of
 potential source signals. Methods, such as simple orthogonal projection or sparse
 approximation~\cite{blumensath:2009,needell:2009,wikipedia-sparse-approximation}, can be
-used convert unknown signals into a set of features that have are likely to be related to
+used to convert unknown signals into a set of features that are likely to be related to
 the types of sources present. In a sense, these ICA features are more likely to be
 \emph{tuned} for the identification of sources and should, in principle, simplify the
 mappings that any ML algorithm needs to learn in order to perform well.
@@ -170,13 +170,13 @@ $$
 
 \subsection*{FastICA}
 There are several algorithms for solving the ICA equations. The implementation that is
-readily available in the \code{scikit-learn} Python is based on FastICA\cite{hyvarinen:1999,
-sklearn-fastica}, an algorithm that uses fast fixed-point iteration to simultaneously
-solve for the source signals $x_j(t)$ and the mixing coefficients $a_{ij}$. It is
-important to note that the FastICA implementation available in \code{scikit-learn} only
-supports real-valued data. Unfortunately, this contraint limits our ability to assess
-the utility of ICA in situation where it would be beneficial to perform ICA on the Fourier
-transform of the raw signal.
+readily available in the \code{scikit-learn} Python is based on
+FastICA~\cite{hyvarinen:1999, sklearn-fastica}, an algorithm that uses fast fixed-point
+iteration to simultaneously solve for the source signals $x_j(t)$ and the mixing
+coefficients $a_{ij}$. It is important to note that the FastICA implementation available
+in \code{scikit-learn} only supports real-valued data. Unfortunately, this contraint limits
+our ability to assess the utility of ICA in situation where it would be beneficial to
+perform ICA on the Fourier transform of the raw signal.
 
 \subsection*{Classical Application of ICA: Multi-Sensor Systems}
 ICA is most commonly applied to time-series data gathered by making measurements with
@@ -624,6 +624,11 @@ found ICA performance to be consistent with theoretical expectations.
         ICA algorithms have been described in the
         literature~\cite{novey:2006,novey:2007,novey:2008,novey:2008b}, but they do not
         appear to have been ported to Python.
+
+    \item Recent research in the literature suggest that it may be possible to perform
+        source separation directly on the power spectra~\cite{fu:2016}. This possibility
+        would, in principle, completely eliminate issues related to phase synchronization
+        of source signals and may be interesting to further investigate.
 \end{itemize}
 
 \printbibliography
