@@ -1,0 +1,75 @@
+# --- Data
+
+# data directory
+/data
+
+# DVC files
+!*.dvc
+
+# --- Python
+
+# compiled code
+__pycache__/
+*.py[cod]
+
+# setuptools
+/dist/
+*.egg-info/
+*.egg*
+
+# pyenv
+.python-version
+
+# testing
+htmlcov/
+.cache
+.coverage
+.coverage.*
+.pytest_cache
+.tox/
+
+# DotEnv configuration
+.env
+
+# --- Compiled code
+
+# shared objects
+*.so
+
+# --- Jupyter
+
+.ipynb_checkpoints/
+.jupyter
+!.jupyter/jupyter_notebook_config.py
+nbconvert
+
+# --- Code editors
+
+# VS Code
+.vscode/
+
+# Pycharm
+.idea
+
+# Spyder
+.spyproject/
+
+# vim
+*.sw[po]
+
+# --- Environments
+
+# direnv
+.direnv*
+.envrc
+
+# conda
+.conda
+
+# --- Miscellaneous
+
+# Log files
+*.log
+
+# macOS
+.DS_Store

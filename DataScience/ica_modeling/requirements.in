@@ -1,0 +1,24 @@
+# --- requirements.in
+
+# Development tools
+jupyterlab
+
+# CLI tools
+rich
+PyYAML
+tqdm
+typer
+
+# Testing and code quality tools
+black
+flake8
+pytest
+
+# Project-specific packages
+librosa
+matplotlib
+numpy
+pandas
+pydub
+scipy
+scikit-learn
